@@ -1,5 +1,5 @@
 import { Blockchain, SandboxContract } from '@ton-community/sandbox';
-import { Cell, toNano } from 'ton-core';
+import { Cell, toNano, Tuple, TupleBuilder, TupleItemInt } from 'ton-core';
 import { Task2 } from '../wrappers/Task2';
 import '@ton-community/test-utils';
 import { compile } from '@ton-community/blueprint';
@@ -34,5 +34,20 @@ describe('Task2', () => {
     it('should deploy', async () => {
         // the check is done inside beforeEach
         // blockchain and task2 are ready to use
+    });
+    it ("1x1 test", async () => {
+        const one_tuple = new TupleBuilder();
+        one_tuple.writeNumber(2n);
+
+        var one_matrix = new TupleBuilder();
+        var two_matrix = new TupleBuilder();
+
+        one_matrix.writeTuple(one_tuple.build());
+        two_matrix.writeTuple(one_tuple.build());
+
+        const res = await task2.getMultiplied(one_matrix.build(), two_matrix.build());
+
+        console.log(res);
+
     });
 });

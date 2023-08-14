@@ -43,10 +43,7 @@ describe('Task1', () => {
         //     beginCell().storeRef(cellToFind).endCell()
         // ).endCell();
         const h = BigInt('0x' + cellToFind.hash().toString("hex"));
-        console.log(h);
         let res = await task1.getBranch(h, cellToFind);
-        console.log(res);
-        console.log(res.equals(cellToFind));
         expect(res.equals(cellToFind));
     });
 });
