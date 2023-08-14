@@ -9,11 +9,42 @@
   After calculating the result matrix, the function should return final result (as tuple).
 -}
 
+int tuple_length (tuple t) asm "TLEN";
+forall X -> (tuple, X) ~tpop (tuple t) asm "TPOP";
+forall X -> int is_tuple (X x) asm "ISTUPLE";
+forall X -> tuple cast_to_tuple (X x) asm "NOP";
+forall X -> int cast_to_int (X x) asm "NOP";
+forall X -> (tuple) to_tuple (X x) asm "NOP";
+
 () recv_internal() {
 }
 
 ;; testable
 (tuple) matrix_multiplier(tuple matrixA, tuple matrixB) method_id {
-  return null();
+  tuple result = empty_tuple();
+
+  int n = matrixA.tlen();
+  int m = matrixB.tlen();
+  int p = matrixB.first().tlen();
+
+  int i = 0;
+  int j = 0;
+
+  while (i <= n) {
+    tuple row = empty_tuple();
+    while (j <= p) {
+      int elem = 0;
+      int k = 0;
+      while (k <= m) {
+        tuple first = cast_to_tuple(matrixA.at(i));
+        tuple second = cast_to_tuple(matrixB.at(k));
+        elem += cast_to_int(first.at(k)) * cast_to_int(second.at(j));
+      }
+      row~tpush(elem);
+    }
+    result~tpush(row);
+  }
+
+  return result;
 }
 
