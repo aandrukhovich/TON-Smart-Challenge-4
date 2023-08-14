@@ -35,4 +35,54 @@ describe('Task5', () => {
         // the check is done inside beforeEach
         // blockchain and task5 are ready to use
     });
+    it ("1..3 test", async () => {
+        const res = await task5.getFibonacci(1n, 3n);
+        console.log(res);
+    });
+    it ("1..1 test", async () => {
+        const res = await task5.getFibonacci(1n, 1n);
+        console.log(res);
+    });
+    it ("0..1 test", async () => {
+        const res = await task5.getFibonacci(0n, 1n);
+        console.log(res);
+    });
+    it ("10..0 test", async () => {
+        const res = await task5.getFibonacci(10n, 0n);
+        console.log(res);
+    });
+    it ("1..10 test", async () => {
+        const res = await task5.getFibonacci(1n, 10n);
+        console.log(res);
+    });
+    it ("201..4 test", async () => {
+        const res = await task5.getFibonacci(201n, 4n);
+        console.log(res);
+    });
+    it ("370..1 test", async () => {
+        const res = await task5.getFibonacci(370n, 1n);
+        console.log(res);
+    });
+    it ("369..1 test", async () => {
+        const res = await task5.getFibonacci(369n, 1n);
+        console.log(res);
+    });
+    it ("369..2 test", async () => {
+        const res = await task5.getFibonacci(369n, 2n);
+        console.log(res);
+    });
+    it ("367..4 test", async () => {
+        const res = await task5.getFibonacci(367n, 4n);
+        console.log(res);
+    });
+
+
+
+
+
+
+
+
+
+
 });
