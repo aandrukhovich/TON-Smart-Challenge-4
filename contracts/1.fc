@@ -11,5 +11,22 @@
 
 ;; testable
 (cell) find_branch_by_hash(int hash, cell tree) method_id {
+  slice s = tree.begin_parse();
+  var h = cell_hash(tree);
+  ~dump(h);
+  ~dump(hash);
+
+  if (h == hash) {
+    return tree;
+  }
+  while (s.slice_refs_empty?() != -1) { ;; we should remind that -1 is true
+    cell inner_cell = s~load_ref(); ;; load cell from slice msg
+    var result_cell = find_branch_by_hash(hash, inner_cell);
+    var result_slice = result_cell.begin_parse();
+
+    if (result_cell.cell_hash() == hash) {
+      return result_cell;
+    }
+  }
   return begin_cell().end_cell();
 }

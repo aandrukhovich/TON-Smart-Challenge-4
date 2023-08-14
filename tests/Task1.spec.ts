@@ -1,5 +1,5 @@
 import { Blockchain, SandboxContract } from '@ton-community/sandbox';
-import { Cell, toNano } from 'ton-core';
+import { Cell, beginCell, toNano } from 'ton-core';
 import { Task1 } from '../wrappers/Task1';
 import '@ton-community/test-utils';
 import { compile } from '@ton-community/blueprint';
@@ -34,5 +34,19 @@ describe('Task1', () => {
     it('should deploy', async () => {
         // the check is done inside beforeEach
         // blockchain and task1 are ready to use
+    });
+    it('should return true for one cell', async () => {
+        const cellToFind = beginCell().storeRef(new Cell()).endCell();
+        // const root = beginCell().storeRef(
+        //     beginCell().endCell()
+        // ).storeRef(
+        //     beginCell().storeRef(cellToFind).endCell()
+        // ).endCell();
+        const h = BigInt('0x' + cellToFind.hash().toString("hex"));
+        console.log(h);
+        let res = await task1.getBranch(h, cellToFind);
+        console.log(res);
+        console.log(res.equals(cellToFind));
+        expect(res.equals(cellToFind));
     });
 });
