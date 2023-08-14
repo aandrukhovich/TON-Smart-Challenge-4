@@ -13,11 +13,39 @@
   1923063428480944139667114773918309212080528]
 -}
 
+
+forall X -> (tuple, X) ~tpop (tuple t) asm "TPOP";
+forall X -> int is_tuple (X x) asm "ISTUPLE";
+forall X -> tuple cast_to_tuple (X x) asm "NOP";
+forall X -> int cast_to_int (X x) asm "NOP";
+forall X -> (tuple) to_tuple (X x) asm "NOP";
+(int) tlen (tuple t) asm "TLEN";
+
 () recv_internal() {
 }
 
 ;; testable
 (tuple) fibonacci_sequence (int n, int k) method_id {
-  return null();
+  int a = 0;
+  int b = 1;
+  int i = 0;
+
+  while (i < n) {
+    int t = a + b;
+    a = b;
+    b = t;
+    i += 1;
+  }
+
+  tuple result = empty_tuple();
+  while (n <= k) {
+    result~tpush(a);
+    int t = a + b;
+    a = b;
+    b = t;
+    n += 1;
+  }
+
+  return result;
 }
 
