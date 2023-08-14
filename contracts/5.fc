@@ -38,12 +38,12 @@ forall X -> (tuple) to_tuple (X x) asm "NOP";
   }
 
   tuple result = empty_tuple();
-  while (n <= k) {
+  while (k > 0) {
     result~tpush(a);
     int t = a + b;
     a = b;
     b = t;
-    n += 1;
+    k -= 1;
   }
 
   return result;
