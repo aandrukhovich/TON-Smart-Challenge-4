@@ -37,7 +37,7 @@
 
   ifnot (body.slice_refs_empty?()) { ;; we should remind that -1 is true
     builder res = encrypt(shift, body~load_ref().begin_parse());
-    result = store_builder(result, res);
+    result = result.store_ref(res.end_cell());
   }
   return result.end_cell();
 }
@@ -56,41 +56,10 @@
 
   ifnot (body.slice_refs_empty?()) { ;; we should remind that -1 is true
     builder res = encrypt(-1 * shift, body~load_ref().begin_parse());
-    result = store_builder(result, res);
+    result = result.store_ref(res.end_cell());
   }
   return result.end_cell();
 }
-
-;; ;; testable
-;; (cell) caesar_cipher_decrypt(int shift, cell text) method_id {
-;;   builder result = begin_cell();
-;;   slice body = text.begin_parse();
-;;   slice data = get_data().begin_parse();
-
-;;   if (data.slice_empty?()) {
-;;     int flags = body~load_uint(32);
-;;     result~store_uint(flags, 32);
-;;     set_data(begin_cell().store_uint(0, 4).end_cell());
-;;   }
-
-;;   do {
-;;     int c = body~load_uint(8);
-;;     if ((c >= 65) & (c <= 90)) {
-;;       c = 65 + (c - 65 - shift) % 26;
-;;     } 
-;;     if ((c >= 97) & (c <= 122)) {
-;;       c = 97 + (c - 97 - shift) % 26;
-;;     }
-;;     result~store_uint(c, 8);
-;;   } until (body.slice_data_empty?())
-
-;;   ifnot (body.slice_refs_empty?()) { ;; we should remind that -1 is true
-;;     cell res = caesar_cipher_encrypt(shift, body~load_ref());
-;;     result = result.store_ref(res);
-;;   }
-;;   return result.end_cell();
-;; }
-
 
 ;; ;; 65 -> 67
 ;; ;; 89 -> 66
