@@ -9,7 +9,7 @@
 () recv_internal() {
 }
 
-(builder) encrypt(int shift, slice body) {
+(builder) encrypt(int shift, slice body) method_id {
   builder result = begin_cell();
   do {
     int c = body~load_uint(8);
@@ -24,6 +24,19 @@
   return result;
 }
 
+builder innerEncode(int shift, cell tree) method_id {
+  builder result = begin_cell();
+  slice body = tree.begin_parse();
+  builder encrypted = encrypt(shift, body);
+  result = store_builder(result, encrypted);
+
+  ifnot (body.slice_refs_empty?()) { ;; we should remind that -1 is true
+    builder res = innerEncode(shift, body~load_ref());
+    result = result.store_ref(res.end_cell());
+  }
+  return result;
+}
+
 ;; testable
 (cell) caesar_cipher_encrypt(int shift, cell text) method_id {
   builder result = begin_cell();
@@ -32,11 +45,10 @@
   result~store_uint(flags, 32);
 
   builder encrypted = encrypt(shift, body);
-
   result = store_builder(result, encrypted);
 
   ifnot (body.slice_refs_empty?()) { ;; we should remind that -1 is true
-    builder res = encrypt(shift, body~load_ref().begin_parse());
+    builder res = innerEncode(shift, body~load_ref());
     result = result.store_ref(res.end_cell());
   }
   return result.end_cell();
@@ -55,7 +67,7 @@
   result = store_builder(result, encrypted);
 
   ifnot (body.slice_refs_empty?()) { ;; we should remind that -1 is true
-    builder res = encrypt(-1 * shift, body~load_ref().begin_parse());
+    builder res = innerEncode(-1 * shift, body~load_ref());
     result = result.store_ref(res.end_cell());
   }
   return result.end_cell();
