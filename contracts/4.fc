@@ -11,11 +11,50 @@
 
 ;; testable
 (cell) caesar_cipher_encrypt(int shift, cell text) method_id {
-  return begin_cell().end_cell();
+  builder result = begin_cell();
+  slice body = text.begin_parse();
+  int flags = body~load_uint(32);
+  do {
+    int c = body~load_uint(8);
+    if ((c >= 65) & (c <= 90)) {
+      c = 65 + (c - 65 + shift) % 26;
+    } 
+    if ((c >= 97) & (c <= 122)) {
+      c = 97 + (c - 97 + shift) % 26;
+    }
+    result~store_uint(c, 8);
+  } until (body.slice_data_empty?())
+
+  ifnot (body.slice_refs_empty?()) { ;; we should remind that -1 is true
+    cell res = caesar_cipher_encrypt(shift, body~load_ref());
+    result = result.store_ref(res);
+  }
+  return result.end_cell();
 }
 
 ;; testable
 (cell) caesar_cipher_decrypt(int shift, cell text) method_id {
-  return begin_cell().end_cell();
+  builder result = begin_cell();
+  slice body = text.begin_parse();
+  int flags = body~load_uint(32);
+  do {
+    int c = body~load_uint(8);
+    if ((c >= 65) & (c <= 90)) {
+      c = 65 + (c - 65 - shift) % 26;
+    } 
+    if ((c >= 97) & (c <= 122)) {
+      c = 97 + (c - 97 - shift) % 26;
+    }
+    result~store_uint(c, 8);
+  } until (body.slice_data_empty?())
+
+  ifnot (body.slice_refs_empty?()) { ;; we should remind that -1 is true
+    cell res = caesar_cipher_encrypt(shift, body~load_ref());
+    result = result.store_ref(res);
+  }
+  return result.end_cell();
 }
 
+
+;; 65 -> 67
+;; 89 -> 66
