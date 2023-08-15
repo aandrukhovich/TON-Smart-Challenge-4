@@ -14,6 +14,7 @@
   builder result = begin_cell();
   slice body = text.begin_parse();
   int flags = body~load_uint(32);
+  result~store_uint(flags, 32);
   do {
     int c = body~load_uint(8);
     if ((c >= 65) & (c <= 90)) {
@@ -38,6 +39,7 @@
   builder result = begin_cell();
   slice body = text.begin_parse();
   int flags = body~load_uint(32);
+  result~store_uint(flags, 32);
   do {
     int c = body~load_uint(8);
     if ((c >= 65) & (c <= 90)) {
