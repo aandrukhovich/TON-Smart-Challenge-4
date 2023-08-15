@@ -25,6 +25,7 @@
     result~store_uint(c, 8);
   } until (body.slice_data_empty?())
 
+
   ifnot (body.slice_refs_empty?()) { ;; we should remind that -1 is true
     cell res = caesar_cipher_encrypt(shift, body~load_ref());
     result = result.store_ref(res);
