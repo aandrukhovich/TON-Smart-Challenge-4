@@ -1,5 +1,5 @@
 import { Blockchain, SandboxContract } from '@ton-community/sandbox';
-import { Cell, toNano } from 'ton-core';
+import { Cell, Slice, beginCell, toNano } from 'ton-core';
 import { Task4 } from '../wrappers/Task4';
 import '@ton-community/test-utils';
 import { compile } from '@ton-community/blueprint';
@@ -34,5 +34,23 @@ describe('Task4', () => {
     it('should deploy', async () => {
         // the check is done inside beforeEach
         // blockchain and task4 are ready to use
+    });
+    it ("decrypt Hello World", async () => {
+        const s = beginCell().storeInt(0, 32).storeStringTail("Hello World!").endCell();
+        const ss = beginCell().storeStringTail("Khoor Zruog!").endCell();
+        const res = await task4.getDecrypt(29n, s);
+        console.log(res);
+        console.log(s);
+        console.log(ss);
+        expect(s.equals(ss));
+    });
+    it ("Hello World", async () => {
+        const s = beginCell().storeInt(0, 32).storeStringTail("Khoor Zruog!").endCell();
+        const ss = beginCell().storeStringTail("Hello World!").endCell();
+        const res = await task4.getEncrypt(29n, s);
+        console.log(res);
+        console.log(s);
+        console.log(ss);
+        expect(s.equals(ss));
     });
 });
