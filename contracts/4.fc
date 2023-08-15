@@ -9,7 +9,7 @@
 () recv_internal() {
 }
 
-(builder) encrypt(int shift, slice body) method_id {
+(builder) encrypt(int shift, slice body) {
   builder result = begin_cell();
   do {
     int c = body~load_uint(8);
