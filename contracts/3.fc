@@ -194,8 +194,6 @@ forall X -> (X, X) duplicate(X value) {
       cell_to_write~store_uint(value, value_size);
       ;; ~strdump("after");
       ;; ~dump(cell_to_write);
-      ;; ~dump(value);
-      ;; ~dump(value_size);
     } else {
       ;; split `value` to 2 chunks
       int bits_to_first_chunk = builder_bits_remains(cell_to_write);
@@ -217,9 +215,11 @@ forall X -> (X, X) duplicate(X value) {
     } else {
       int first_chunk = slice_bits(slice_to_read);
       slice_to_read~load_uint(first_chunk);
-      next_cell = slice_to_read.preload_ref();
-      slice_to_read = next_cell.begin_parse();
-      slice_to_read~load_uint(flag_size - first_chunk);
+      ifnot (slice_to_read.slice_refs_empty?()) {
+        next_cell = slice_to_read.preload_ref();
+        slice_to_read = next_cell.begin_parse();
+        slice_to_read~load_uint(flag_size - first_chunk);
+      }
     }
   ;; stop closures
   }
@@ -240,9 +240,13 @@ forall X -> (X, X) duplicate(X value) {
     ;; ~strdump("-- start writing iteration");
     ;; cell end_final = end_final_cell.store_uint(slice_to_write.preload_uint(slice_bits(slice_to_write)), 1023).end_cell();
     cell end_final = end_final_cell.store_slice(slice_to_write).end_cell();
+    ;; ~strdump("step 1");
     start_final_cell.store_ref(end_final);
+    ;; ~strdump("step 2");
     end_final_cell = start_final_cell;
+    ;; ~strdump("step 3");
     start_final_cell = begin_cell();
+    ;; ~strdump("step 4");
 
     slice_to_write = slice_to_write.preload_ref().begin_parse();
   }
