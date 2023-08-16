@@ -1,12 +1,30 @@
 {- 
   TASK 3 - Find and replace binary substring
+
   Binary string is represented as a cell linked list: string splitted to chunks,
   first chunk stored to the root cell, next one to the cell in ref and so on;
-  each cell can have only one ref. 
+  each cell can have only one ref.
+
   Write the method that find and replaces one flags in the binary string
   with another value. Flags and values can be can be of any length, but
   strictly up to 128 bits. The method must replace every flag it finds.
   Flag and the value to be replaced is guaranteed to be greater than 0.
+
+  Flag and the value may be of different lengths.
+  When there are overlapping flags, only the first one
+  from the overlap needs to be replaced (for example, if the flag is 101,
+  value is 111, and string is 10101, then the result would be 11101, but if
+  the string is 1010101, then the result would be 1110111).
+  Every cell in the input linked list, except for the last one
+
+  (the one that is the deepest in the tree), is guaranteed to be full
+  (guaranteed to contain 1023 bits).
+
+  The requirements on the output cell are more loose - only the concatenation of bits
+  from the linked list needs to match that of the expected answer, but the structure
+  itself may be different (for example, for the purposes of comparing the answer,
+  a cell with bit 1 and a ref containing bits 10 is the same as a cell containing
+  bit 11 and a ref with bit 0 - they both make up a bitstring 110).
   Lets give a simple example. We have the target flag 101110101 and the value
   to be written 111111111 as inputs, and a linked list of cells, in which the bit
   value of the first cell ends with ...10100001011, and in the ref we have cell that
@@ -18,9 +36,228 @@
 
 () recv_internal() {
 }
+int bitsize (int x) asm "UBITSIZE";
+int builder_bits_remains(builder b) asm "BREMBITS";
+
+int continue_() impure asm "JMPX";
+int start_loop() impure asm "c0 PUSHCTR";
+() dump_stack() impure asm "DUMPSTK";
+forall X -> (X, X) duplicate(X value) {
+  return (value, value);
+}
+
 
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
-  return begin_cell().end_cell();
+  builder result = begin_cell();
+  if ((flag < 0) | (value < 0)) {
+    return begin_cell().end_cell();
+  }
+  int flag_size = bitsize(flag);
+  int value_size = bitsize(value);
+
+  cell cell_to_read = linked_list;
+  builder cell_to_write = result;
+  slice slice_to_read = cell_to_read.begin_parse();
+
+  cell next_cell = begin_cell().end_cell();
+
+  while (slice_to_read.slice_data_empty?() == 0) {
+    ~strdump("----start iteration");
+    ~dump(slice_to_read);
+    int stop = 0;
+    int first_bit = slice_to_read.preload_uint(1);
+    if (first_bit == 0) {
+      ~strdump("first bit is 0");
+      ;; remove first char
+      ;; go to next cell if current is empty; if there's no current — break
+      slice_to_read~load_uint(1);                   
+      if (slice_to_read.slice_data_empty?()) {
+        ~strdump("Current cell is empty");
+        ifnot (slice_to_read.slice_refs_empty?()) {
+          next_cell = slice_to_read.preload_ref();
+          slice_to_read = next_cell.begin_parse();
+        } else {
+          ~strdump("No next cell, finish");
+        }
+      }
+
+      ;; write 0 to cell_to_write
+      ;; if cell_to_write is full — create next one
+      cell_to_write~store_uint(0, 1);
+      if (builder_bits_remains(cell_to_write) == 0) {
+        ~strdump("Current write cell is full");
+        builder new_cell_to_write = begin_cell().store_ref(cell_to_write.end_cell());
+        cell_to_write = new_cell_to_write;
+      }
+
+      ;; go to next char
+      ~strdump("stop=1");
+      stop = 1;
+    }
+    ifnot (stop) {
+
+    ~strdump("first bit is 1");
+
+    ;; first bit == 1
+    ;; need to compare current value with flag
+
+    int string_to_check = 0;
+    ;; max from flag_size and remains bits
+    int bits_to_load = flag_size;
+    if (flag_size > slice_bits(slice_to_read)) {
+      bits_to_load = slice_bits(slice_to_read);
+    }
+    ~strdump("bits to load = ");
+    ~dump(bits_to_load);
+    ~strdump("slice bits = ");
+    ~dump(slice_bits(slice_to_read));
+    string_to_check = (string_to_check << bits_to_load) + preload_uint(slice_to_read, bits_to_load);
+    ~strdump("string to check is formed");
+
+    if (bitsize(string_to_check) < flag_size) {
+      ~strdump("Try to read next cell");
+      ifnot (slice_to_read.slice_refs_empty?()) {
+        slice next_slice = slice_to_read.preload_ref().begin_parse();
+        bits_to_load = flag_size - bitsize(string_to_check);
+        if (flag_size > slice_bits(next_slice)) {
+          bits_to_load = slice_bits(next_slice);
+        }
+        string_to_check = (string_to_check << bits_to_load) + preload_uint(next_slice, bits_to_load);
+      } 
+    }
+    ~strdump("string to check = ");
+    ~dump(string_to_check);
+    ~strdump("flag = ");
+    ~dump(flag);
+
+
+    ;; count of remains symbols is less than flagsize
+    ;; just write all remain bits
+    if (bitsize(string_to_check) < flag_size) {
+      ~strdump("Not enough bits to check");
+      slice_to_read~load_uint(1);                   
+      if (slice_to_read.slice_data_empty?()) {
+        ifnot (slice_to_read.slice_refs_empty?()) {
+          next_cell = slice_to_read.preload_ref();
+          slice_to_read = next_cell.begin_parse();
+        }
+      }
+
+      ;; write 1 to cell_to_write
+      ;; if cell_to_write is full — create next one
+      cell_to_write~store_uint(1, 1);
+      if (builder_bits_remains(cell_to_write) == 0) {
+        builder new_cell_to_write = begin_cell().store_ref(cell_to_write.end_cell());
+        cell_to_write = new_cell_to_write;
+      }
+
+      ~strdump("stop=1");
+      stop = 1;
+    }
+
+    ifnot(stop) {
+
+
+    if (string_to_check != flag) {
+      ~strdump("Check failed, string != flag");
+      ;; write it to cell_to_write
+      cell_to_write~store_uint(1, 1);
+      if (builder_bits_remains(cell_to_write) == 0) {
+        builder new_cell_to_write = begin_cell().store_ref(cell_to_write.end_cell());
+        cell_to_write = new_cell_to_write;
+      }
+
+      ;; remove first char
+      slice_to_read~load_uint(1);                   
+      if (slice_to_read.slice_data_empty?()) {
+        ifnot (slice_to_read.slice_refs_empty?()) {
+          next_cell = slice_to_read.preload_ref();
+          slice_to_read = next_cell.begin_parse();
+        }
+      }
+
+      ~strdump("stop=1");
+      stop = 1;
+    }
+
+    ifnot (stop) {
+    ~strdump("Check success, string == flag");
+
+    ;; we have a match
+    ;; append `value` to cell_to_write
+    ;; remove `flag` from cell_to_read
+
+    ;; if we have enought space, just write it
+    if (builder_bits_remains(cell_to_write) > value_size) {
+      ~strdump("before");
+      ~dump(cell_to_write);
+      cell_to_write~store_uint(value, value_size);
+      ~strdump("after");
+      ~dump(cell_to_write);
+      ~dump(value);
+      ~dump(value_size);
+    } else {
+      ;; split `value` to 2 chunks
+      int bits_to_first_chunk = builder_bits_remains(cell_to_write);
+      int bits_to_second_chunk = value_size - bits_to_first_chunk;
+      
+      ;; value = 1010101, chunks = (101, 0101); 
+      ;; chunk1 = value >> bits_to_second_chunk
+      ;; chunk2 = 1111 && 1010101 = 0101 (stored with 4)
+      ;; 1111 = (1 << bits_to_second_chunk) - 1
+      cell_to_write~store_uint(value >> bits_to_second_chunk, bits_to_first_chunk);
+      builder new_cell_to_write = begin_cell().store_ref(cell_to_write.end_cell());
+      cell_to_write = new_cell_to_write;
+      cell_to_write~store_uint(value & ((1 << bits_to_second_chunk) - 1), bits_to_second_chunk);
+    }
+
+    ;; remove flag from cell_to_read, can be continous
+    if (slice_bits(slice_to_read) > flag_size) {
+      slice_to_read~load_uint(flag_size);
+    } else {
+      int first_chunk = slice_bits(slice_to_read);
+      slice_to_read~load_uint(first_chunk);
+      next_cell = slice_to_read.preload_ref();
+      slice_to_read = next_cell.begin_parse();
+      slice_to_read~load_uint(flag_size - first_chunk);
+    }
+  ;; stop closures
+  }
+  }
+  }
+  }
+
+  ~strdump("End of cycle!");
+
+  cell final_cell = cell_to_write.end_cell();
+  
+  slice slice_to_write = final_cell.begin_parse();
+  ~dump(slice_to_write);
+
+  builder end_final_cell = begin_cell();
+  builder start_final_cell = begin_cell();
+  while (slice_to_write.slice_refs_empty?() == 0) {
+    ~strdump("-- start writing iteration");
+    ;; cell end_final = end_final_cell.store_uint(slice_to_write.preload_uint(slice_bits(slice_to_write)), 1023).end_cell();
+    cell end_final = end_final_cell.store_slice(slice_to_write).end_cell();
+    ~strdump("step 1");
+    start_final_cell.store_ref(end_final);
+    ~strdump("step 2");
+    end_final_cell = start_final_cell;
+    ~strdump("step 3");
+    start_final_cell = begin_cell();
+    ~strdump("step 4");
+
+    slice_to_write = slice_to_write.preload_ref().begin_parse();
+  }
+
+  ~dump(start_final_cell);
+  ~dump(builder_bits_remains(start_final_cell));
+  ;; cell start_final = start_final_cell.store_sl(slice_to_write.preload_uint(slice_bits(slice_to_write)), 1000).end_cell();
+  cell start_final = start_final_cell.store_slice(slice_to_write).end_cell();
+  ~dump(start_final);
+
+  return start_final;
 }
 
