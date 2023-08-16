@@ -41,7 +41,6 @@ int builder_bits_remains(builder b) asm "BREMBITS";
 
 int continue_() impure asm "JMPX";
 int start_loop() impure asm "c0 PUSHCTR";
-() dump_stack() impure asm "DUMPSTK";
 forall X -> (X, X) duplicate(X value) {
   return (value, value);
 }
@@ -63,22 +62,22 @@ forall X -> (X, X) duplicate(X value) {
   cell next_cell = begin_cell().end_cell();
 
   while (slice_to_read.slice_data_empty?() == 0) {
-    ~strdump("----start iteration");
-    ~dump(slice_to_read);
+    ;; ~strdump("----start iteration");
+    ;; ~dump(slice_to_read);
     int stop = 0;
     int first_bit = slice_to_read.preload_uint(1);
     if (first_bit == 0) {
-      ~strdump("first bit is 0");
+      ;; ~strdump("first bit is 0");
       ;; remove first char
       ;; go to next cell if current is empty; if there's no current — break
       slice_to_read~load_uint(1);                   
       if (slice_to_read.slice_data_empty?()) {
-        ~strdump("Current cell is empty");
+        ;; ~strdump("Current cell is empty");
         ifnot (slice_to_read.slice_refs_empty?()) {
           next_cell = slice_to_read.preload_ref();
           slice_to_read = next_cell.begin_parse();
         } else {
-          ~strdump("No next cell, finish");
+          ;; ~strdump("No next cell, finish");
         }
       }
 
@@ -86,18 +85,18 @@ forall X -> (X, X) duplicate(X value) {
       ;; if cell_to_write is full — create next one
       cell_to_write~store_uint(0, 1);
       if (builder_bits_remains(cell_to_write) == 0) {
-        ~strdump("Current write cell is full");
+        ;; ~strdump("Current write cell is full");
         builder new_cell_to_write = begin_cell().store_ref(cell_to_write.end_cell());
         cell_to_write = new_cell_to_write;
       }
 
       ;; go to next char
-      ~strdump("stop=1");
+      ;; ~strdump("stop=1");
       stop = 1;
     }
     ifnot (stop) {
 
-    ~strdump("first bit is 1");
+    ;; ~strdump("first bit is 1");
 
     ;; first bit == 1
     ;; need to compare current value with flag
@@ -108,15 +107,15 @@ forall X -> (X, X) duplicate(X value) {
     if (flag_size > slice_bits(slice_to_read)) {
       bits_to_load = slice_bits(slice_to_read);
     }
-    ~strdump("bits to load = ");
-    ~dump(bits_to_load);
-    ~strdump("slice bits = ");
-    ~dump(slice_bits(slice_to_read));
+    ;; ~strdump("bits to load = ");
+    ;; ~dump(bits_to_load);
+    ;; ~strdump("slice bits = ");
+    ;; ~dump(slice_bits(slice_to_read));
     string_to_check = (string_to_check << bits_to_load) + preload_uint(slice_to_read, bits_to_load);
-    ~strdump("string to check is formed");
+    ;; ~strdump("string to check is formed");
 
     if (bitsize(string_to_check) < flag_size) {
-      ~strdump("Try to read next cell");
+      ;; ~strdump("Try to read next cell");
       ifnot (slice_to_read.slice_refs_empty?()) {
         slice next_slice = slice_to_read.preload_ref().begin_parse();
         bits_to_load = flag_size - bitsize(string_to_check);
@@ -126,16 +125,16 @@ forall X -> (X, X) duplicate(X value) {
         string_to_check = (string_to_check << bits_to_load) + preload_uint(next_slice, bits_to_load);
       } 
     }
-    ~strdump("string to check = ");
-    ~dump(string_to_check);
-    ~strdump("flag = ");
-    ~dump(flag);
+    ;; ~strdump("string to check = ");
+    ;; ~dump(string_to_check);
+    ;; ~strdump("flag = ");
+    ;; ~dump(flag);
 
 
     ;; count of remains symbols is less than flagsize
     ;; just write all remain bits
     if (bitsize(string_to_check) < flag_size) {
-      ~strdump("Not enough bits to check");
+      ;; ~strdump("Not enough bits to check");
       slice_to_read~load_uint(1);                   
       if (slice_to_read.slice_data_empty?()) {
         ifnot (slice_to_read.slice_refs_empty?()) {
@@ -152,7 +151,7 @@ forall X -> (X, X) duplicate(X value) {
         cell_to_write = new_cell_to_write;
       }
 
-      ~strdump("stop=1");
+      ;; ~strdump("stop=1");
       stop = 1;
     }
 
@@ -160,7 +159,7 @@ forall X -> (X, X) duplicate(X value) {
 
 
     if (string_to_check != flag) {
-      ~strdump("Check failed, string != flag");
+      ;; ~strdump("Check failed, string != flag");
       ;; write it to cell_to_write
       cell_to_write~store_uint(1, 1);
       if (builder_bits_remains(cell_to_write) == 0) {
@@ -177,12 +176,12 @@ forall X -> (X, X) duplicate(X value) {
         }
       }
 
-      ~strdump("stop=1");
+      ;; ~strdump("stop=1");
       stop = 1;
     }
 
     ifnot (stop) {
-    ~strdump("Check success, string == flag");
+    ;; ~strdump("Check success, string == flag");
 
     ;; we have a match
     ;; append `value` to cell_to_write
@@ -190,13 +189,13 @@ forall X -> (X, X) duplicate(X value) {
 
     ;; if we have enought space, just write it
     if (builder_bits_remains(cell_to_write) > value_size) {
-      ~strdump("before");
-      ~dump(cell_to_write);
+      ;; ~strdump("before");
+      ;; ~dump(cell_to_write);
       cell_to_write~store_uint(value, value_size);
-      ~strdump("after");
-      ~dump(cell_to_write);
-      ~dump(value);
-      ~dump(value_size);
+      ;; ~strdump("after");
+      ;; ~dump(cell_to_write);
+      ;; ~dump(value);
+      ;; ~dump(value_size);
     } else {
       ;; split `value` to 2 chunks
       int bits_to_first_chunk = builder_bits_remains(cell_to_write);
@@ -228,35 +227,31 @@ forall X -> (X, X) duplicate(X value) {
   }
   }
 
-  ~strdump("End of cycle!");
+  ;; ~strdump("End of cycle!");
 
   cell final_cell = cell_to_write.end_cell();
   
   slice slice_to_write = final_cell.begin_parse();
-  ~dump(slice_to_write);
+  ;; ~dump(slice_to_write);
 
   builder end_final_cell = begin_cell();
   builder start_final_cell = begin_cell();
   while (slice_to_write.slice_refs_empty?() == 0) {
-    ~strdump("-- start writing iteration");
+    ;; ~strdump("-- start writing iteration");
     ;; cell end_final = end_final_cell.store_uint(slice_to_write.preload_uint(slice_bits(slice_to_write)), 1023).end_cell();
     cell end_final = end_final_cell.store_slice(slice_to_write).end_cell();
-    ~strdump("step 1");
     start_final_cell.store_ref(end_final);
-    ~strdump("step 2");
     end_final_cell = start_final_cell;
-    ~strdump("step 3");
     start_final_cell = begin_cell();
-    ~strdump("step 4");
 
     slice_to_write = slice_to_write.preload_ref().begin_parse();
   }
 
-  ~dump(start_final_cell);
-  ~dump(builder_bits_remains(start_final_cell));
+  ;; ~dump(start_final_cell);
+  ;; ~dump(builder_bits_remains(start_final_cell));
   ;; cell start_final = start_final_cell.store_sl(slice_to_write.preload_uint(slice_bits(slice_to_write)), 1000).end_cell();
   cell start_final = start_final_cell.store_slice(slice_to_write).end_cell();
-  ~dump(start_final);
+  ;; ~dump(start_final);
 
   return start_final;
 }
