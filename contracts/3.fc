@@ -241,7 +241,7 @@ forall X -> (X, X) duplicate(X value) {
     ;; cell end_final = end_final_cell.store_uint(slice_to_write.preload_uint(slice_bits(slice_to_write)), 1023).end_cell();
     cell end_final = end_final_cell.store_slice(slice_to_write).end_cell();
     ;; ~strdump("step 1");
-    start_final_cell.store_ref(end_final);
+    start_final_cell = start_final_cell.store_ref(end_final);
     ;; ~strdump("step 2");
     end_final_cell = start_final_cell;
     ;; ~strdump("step 3");
@@ -251,7 +251,6 @@ forall X -> (X, X) duplicate(X value) {
     slice_to_write = slice_to_write.preload_ref().begin_parse();
   }
 
-  ;; ~dump(start_final_cell);
   ;; ~dump(builder_bits_remains(start_final_cell));
   ;; cell start_final = start_final_cell.store_sl(slice_to_write.preload_uint(slice_bits(slice_to_write)), 1000).end_cell();
   cell start_final = start_final_cell.store_slice(slice_to_write).end_cell();
