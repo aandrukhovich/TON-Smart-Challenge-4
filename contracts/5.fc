@@ -14,12 +14,7 @@
 -}
 
 
-forall X -> (tuple, X) ~tpop (tuple t) asm "TPOP";
-forall X -> int is_tuple (X x) asm "ISTUPLE";
-forall X -> tuple cast_to_tuple (X x) asm "NOP";
-forall X -> int cast_to_int (X x) asm "NOP";
 forall X -> (tuple) to_tuple (X x) asm "NOP";
-(int) tlen (tuple t) asm "TLEN";
 
 () recv_internal() {
 }
@@ -65,13 +60,3 @@ forall X -> (tuple) to_tuple (X x) asm "NOP";
 
   return result;
 }
-
-
-
-;; i == 370
-;; a = f(370)
-;; b = f(371)
-
-;; i == 371
-;; a = f(371)
-;; b = f(372)****
