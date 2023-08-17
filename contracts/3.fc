@@ -236,8 +236,10 @@ forall X -> (X, X) duplicate(X value) {
 
   builder end_final_cell = begin_cell();
   builder start_final_cell = begin_cell();
+  slice next_slice = begin_cell().end_cell().begin_parse();
   while (slice_to_write.slice_refs_empty?() == 0) {
-    ~strdump("-- start writing iteration");
+    ;; ~strdump("-- start writing iteration");
+    next_slice = slice_to_write~load_ref().begin_parse();
     cell end_final = end_final_cell.store_slice(slice_to_write).end_cell();
     ;; ~dump(end_final);
 
@@ -248,13 +250,14 @@ forall X -> (X, X) duplicate(X value) {
     start_final_cell = begin_cell();
     ;; ~strdump("step 4");
 
-    slice_to_write = slice_to_write.preload_ref().begin_parse();
+    slice_to_write = next_slice;
   }
 
   ;; ~dump(builder_bits_remains(start_final_cell));
   ;; cell start_final = start_final_cell.store_sl(slice_to_write.preload_uint(slice_bits(slice_to_write)), 1000).end_cell();
   cell end_final = end_final_cell.store_slice(slice_to_write).end_cell();
   ;; ~dump(end_final);
+  ;; ~dump(slice_depth(end_final.begin_parse()));
   ;; ~dump(start_final);
 
   return end_final;
