@@ -71,6 +71,8 @@ forall X -> (tuple) to_tuple (X x) asm "NOP";
   }
   }
   }
+  }
+
 
   while (i < n) {
     int t = a + b;
