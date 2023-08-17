@@ -36,21 +36,21 @@ describe('Task4', () => {
         // blockchain and task4 are ready to use
     });
     it ("decrypt Hello World", async () => {
-        const s = beginCell().storeInt(0, 32).storeStringTail("Hello World!").endCell();
-        const ss = beginCell().storeStringTail("Khoor Zruog!").endCell();
+        const s2 = beginCell().storeStringTail("Hello World!").endCell();
+        const s1 = beginCell().storeInt(0, 32).storeStringTail("Hello World!").storeRef(s2).endCell();
+        const res1 = await task4.getEncrypt(3n + (26n * 20000000000n), s1);
+        const res2 = await task4.getEncrypt(3n + (26n * 0n), s1);
+        console.log(res1);
+        console.log(res2);
+        console.log(s1);
+    });
+    it ("Hello World", async () => {
+        const s = beginCell().storeInt(0, 32).storeStringTail("Khoor Zruog!").endCell();
+        const ss = beginCell().storeInt(0, 32).storeStringTail("Hello World!").endCell();
         const res = await task4.getDecrypt(29n, s);
         console.log(res);
         console.log(s);
         console.log(ss);
-        expect(s.equals(ss));
-    });
-    it ("Hello World", async () => {
-        const s = beginCell().storeInt(0, 32).storeStringTail("Khoor Zruog!").endCell();
-        const ss = beginCell().storeStringTail("Hello World!").endCell();
-        const res = await task4.getEncrypt(29n, s);
-        console.log(res);
-        console.log(s);
-        console.log(ss);
-        expect(s.equals(ss));
+        expect(res.equals(ss));
     });
 });
