@@ -14,7 +14,9 @@
 -}
 
 
-forall X -> (tuple) to_tuple (X x) asm "NOP";
+forall X -> (tuple) to_tuple (X x) inline asm "NOP";
+(tuple) tuple_from_stack(int n) impure inline asm "TUPLEVAR";
+() push_to_stack(int n) impure inline asm "NOP";
 
 () recv_internal() {
 }
@@ -34,6 +36,7 @@ forall X -> (tuple) to_tuple (X x) asm "NOP";
 
 ;; testable
 (tuple) fibonacci_sequence (int n, int k) method_id {
+  int kk = k;
   if k == 0 {
     return empty_tuple();
   }
@@ -48,6 +51,7 @@ forall X -> (tuple) to_tuple (X x) asm "NOP";
   tuple result = empty_tuple();
   while ((k > 0) & (i < 369)) {
     result~tpush(a);
+    ;; push_to_stack(a);
     b = a + b;
     a = b - a;
     k -= 1;
@@ -55,10 +59,13 @@ forall X -> (tuple) to_tuple (X x) asm "NOP";
   }
   if (k > 0) {
     result~tpush(a);
+    ;; push_to_stack(a);
   }
   if (k > 1) {
     result~tpush(b);
+    ;; push_to_stack(b);
   }
 
+  ;; return tuple_from_stack(kk);
   return result;
 }
