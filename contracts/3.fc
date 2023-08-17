@@ -48,18 +48,16 @@ forall X -> (X, X) duplicate(X value) {
 
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
-  builder result = begin_cell();
   if ((flag < 0) | (value < 0)) {
-    return begin_cell().end_cell();
+    return get_data();
   }
   int flag_size = bitsize(flag);
   int value_size = bitsize(value);
 
-  cell cell_to_read = linked_list;
-  builder cell_to_write = result;
-  slice slice_to_read = cell_to_read.begin_parse();
+  builder cell_to_write = begin_cell();
+  slice slice_to_read = linked_list.begin_parse();
 
-  cell next_cell = begin_cell().end_cell();
+  cell next_cell = get_data();
 
   while (slice_to_read.slice_data_empty?() == 0) {
     ;; ~strdump("----start iteration");
@@ -240,10 +238,9 @@ forall X -> (X, X) duplicate(X value) {
   while (slice_to_write.slice_refs_empty?() == 0) {
     ;; ~strdump("-- start writing iteration");
     next_slice = slice_to_write~load_ref().begin_parse();
-    cell end_final = end_final_cell.store_slice(slice_to_write).end_cell();
     ;; ~dump(end_final);
 
-    start_final_cell = start_final_cell.store_ref(end_final);
+    start_final_cell = start_final_cell.store_ref(end_final_cell.store_slice(slice_to_write).end_cell());
     ;; ~dump(start_final_cell);
     end_final_cell = start_final_cell;
     ;; ~dump(end_final_cell);
