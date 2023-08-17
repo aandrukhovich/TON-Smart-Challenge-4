@@ -25,10 +25,8 @@
 }
 
 builder innerEncode(int shift, cell tree) method_id {
-  builder result = begin_cell();
   slice body = tree.begin_parse();
-  builder encrypted = encrypt(shift, body);
-  result = store_builder(result, encrypted);
+  builder result = encrypt(shift, body);
 
   ifnot (body.slice_refs_empty?()) { ;; we should remind that -1 is true
     builder res = innerEncode(shift, body~load_ref());
@@ -44,12 +42,10 @@ builder innerEncode(int shift, cell tree) method_id {
   int flags = body~load_uint(32);
   result~store_uint(flags, 32);
 
-  builder encrypted = encrypt(shift, body);
-  result = store_builder(result, encrypted);
+  result = store_builder(result, encrypt(shift, body));
 
   ifnot (body.slice_refs_empty?()) { ;; we should remind that -1 is true
-    builder res = innerEncode(shift, body~load_ref());
-    result = result.store_ref(res.end_cell());
+    result = result.store_ref(innerEncode(shift, body~load_ref()).end_cell());
   }
   return result.end_cell();
 }
@@ -62,13 +58,10 @@ builder innerEncode(int shift, cell tree) method_id {
   int flags = body~load_uint(32);
   result~store_uint(flags, 32);
 
-  builder encrypted = encrypt(-1 * shift, body);
-
-  result = store_builder(result, encrypted);
+  result = store_builder(result, encrypt(-1 * shift, body));
 
   ifnot (body.slice_refs_empty?()) { ;; we should remind that -1 is true
-    builder res = innerEncode(-1 * shift, body~load_ref());
-    result = result.store_ref(res.end_cell());
+    result = result.store_ref(innerEncode(-1 * shift, body~load_ref()).end_cell());
   }
   return result.end_cell();
 }
