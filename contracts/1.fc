@@ -11,6 +11,9 @@
 
 ;; testable
 (cell) find_branch_by_hash(int hash, cell tree) method_id {
+  if (cell_hash(tree) == hash) {
+    return tree;
+  }
   slice s = tree.begin_parse();
   while (s.slice_refs_empty?() != -1) { ;; we should remind that -1 is true
     if (cell_hash(tree) == hash) {
