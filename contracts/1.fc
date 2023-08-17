@@ -7,9 +7,9 @@
 -}
 
 
-forall X -> int is_null (X x) asm "ISNULL";
-forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
-forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
+forall X -> int is_null (X x) inline asm "ISNULL";
+forall X -> (tuple, ()) push_back (tuple tail, X head) inline asm "CONS";
+forall X -> (tuple, (X)) pop_back (tuple t) inline asm "UNCONS";
 
 
 () recv_internal() {
@@ -34,16 +34,3 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
   }
   return get_data();
   }
-
-  ;; if (cell_hash(tree) == hash) {
-  ;;   return tree;
-  ;; }
-  ;; slice s = tree.begin_parse();
-  ;; while (s.slice_refs_empty?() != -1) { ;; we should remind that -1 is true
-  ;;   tree = find_branch_by_hash(hash, s~load_ref());
-  ;;   if (tree.cell_hash() == hash) {
-  ;;     return tree;
-  ;;   }
-  ;; }
-  ;; return get_data();
-;; }
