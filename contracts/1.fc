@@ -6,20 +6,44 @@
   this branch should be returned. Return empty cell if the branch is not found.
 -}
 
+
+forall X -> int is_null (X x) asm "ISNULL";
+forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
+forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
+
+
 () recv_internal() {
 }
 
 ;; testable
 (cell) find_branch_by_hash(int hash, cell tree) method_id {
-  if (cell_hash(tree) == hash) {
-    return tree;
-  }
-  slice s = tree.begin_parse();
-  while (s.slice_refs_empty?() != -1) { ;; we should remind that -1 is true
-    tree = find_branch_by_hash(hash, s~load_ref());
-    if (tree.cell_hash() == hash) {
-      return tree;
-    }
+ tuple stack = null();
+  ;; bring the main cell into the stack to process it in the loop
+  stack~push_back(tree);
+  ;; do it until stack is not null
+  while (~ stack.is_null()) {
+      ;; get the cell from the stack and convert it to a slice to be able to process it
+      tree = stack~pop_back(); 
+      if (cell_hash(tree) == hash) {
+        return tree;
+      }
+      slice s = tree.begin_parse();
+      repeat (s.slice_refs()) {
+          stack~push_back(s~load_ref());
+      }
   }
   return get_data();
-}
+  }
+
+  ;; if (cell_hash(tree) == hash) {
+  ;;   return tree;
+  ;; }
+  ;; slice s = tree.begin_parse();
+  ;; while (s.slice_refs_empty?() != -1) { ;; we should remind that -1 is true
+  ;;   tree = find_branch_by_hash(hash, s~load_ref());
+  ;;   if (tree.cell_hash() == hash) {
+  ;;     return tree;
+  ;;   }
+  ;; }
+  ;; return get_data();
+;; }
