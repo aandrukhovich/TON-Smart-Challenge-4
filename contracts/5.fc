@@ -18,6 +18,10 @@ forall X -> (tuple) to_tuple (X x) inline asm "NOP";
 (tuple) tuple_from_stack(int n) impure inline asm "TUPLEVAR";
 () push_to_stack(int n) impure inline asm "NOP";
 
+forall X -> int is_null (X x) asm "ISNULL";
+forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
+forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
+
 () recv_internal() {
 }
 
@@ -48,9 +52,11 @@ forall X -> (tuple) to_tuple (X x) inline asm "NOP";
   (int a, int b) = fast_fib(n);
   int i = n;
 
-  tuple result = empty_tuple();
+  ;; tuple result = empty_tuple();
+  tuple result = null();
   while ((k > 0) & (i < 369)) {
-    result~tpush(a);
+    ;; result~tpush(a);
+    result~push_back(a);
     ;; push_to_stack(a);
     b = a + b;
     a = b - a;
@@ -58,11 +64,13 @@ forall X -> (tuple) to_tuple (X x) inline asm "NOP";
     i += 1;
   }
   if (k > 0) {
-    result~tpush(a);
+    ;; result~tpush(a);
+    result~push_back(a);
     ;; push_to_stack(a);
   }
   if (k > 1) {
-    result~tpush(b);
+    ;; result~tpush(b);
+    result~push_back(a);
     ;; push_to_stack(b);
   }
 
