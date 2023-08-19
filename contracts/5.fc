@@ -14,13 +14,7 @@
 -}
 
 
-forall X -> (tuple) to_tuple (X x) inline asm "NOP";
-(tuple) tuple_from_stack(int n) impure inline asm "TUPLEVAR";
-() push_to_stack(int n) impure inline asm "NOP";
-
-forall X -> int is_null (X x) asm "ISNULL";
-forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
-forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
+forall X -> (tuple) to_tuple (X x) asm "NOP";
 
 () recv_internal() {
 }
@@ -40,7 +34,6 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
 
 ;; testable
 (tuple) fibonacci_sequence (int n, int k) method_id {
-  int kk = k;
   if k == 0 {
     return empty_tuple();
   }
@@ -52,28 +45,20 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
   (int a, int b) = fast_fib(n);
   int i = n;
 
-  ;; tuple result = empty_tuple();
-  tuple result = null();
+  tuple result = empty_tuple();
   while ((k > 0) & (i < 369)) {
-    ;; result~tpush(a);
-    result~push_back(a);
-    ;; push_to_stack(a);
+    result~tpush(a);
     b = a + b;
     a = b - a;
     k -= 1;
     i += 1;
   }
   if (k > 0) {
-    ;; result~tpush(a);
-    result~push_back(a);
-    ;; push_to_stack(a);
+    result~tpush(a);
   }
   if (k > 1) {
-    ;; result~tpush(b);
-    result~push_back(a);
-    ;; push_to_stack(b);
+    result~tpush(b);
   }
 
-  ;; return tuple_from_stack(kk);
   return result;
 }
