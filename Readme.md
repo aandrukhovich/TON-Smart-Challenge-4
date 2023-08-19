@@ -1,84 +1,74 @@
-# 🏆 Welcome to the TON Smart Challenge #4
-### by TON Foundation
+# TSC4 code repository
 
-## 📝 Tasks
+See the original contest repository https://github.com/ton-community/tsc4.
 
-1. [task1](/contracts/1.fc) - Find branch of the cell tree
-2. [task2](/contracts/2.fc) - Matrix multiplier
-3. [task3](/contracts/3.fc) - Find and replace binary substring 
-4. [task4](/contracts/4.fc) - Caesar Cipher
-5. [task5](/contracts/5.fc) - Fibonacci sequence
+10-days contest of writing a smart-contracts for TON blockchain.
 
-Each of the tasks has two parts:
+Possible to use FunC(dialect of C) or Fift(ASM-like) to write a code. Wrappers and tests are written on TypeScript using Blueprint and Sandbox frameworks.
 
-- 📋 A comment with a description of what the smart contract should do.
-- 💻 The code of the smart contract with one or more functions marked as `testable`.
+# Results:
 
-The goal of the contestants is to provide a code that matches the description.
-Each task may give the contestant either 0 or 5 to 6 score points: 5 for all tests passed plus "gas-score" from 0 to 1 (0 for "infinite" gas consumption, 1 for 0 gas consumption, dependence is inverse exponent).
-Each TVM execution is limited to 100,000,000 (hundred million) gas units.
-This limit is high enough that it only rules out infinite loops. Any practical solution, regardless of how (un)optimized it is, will fit.
+Tasks solved: **5/5**
 
-We ask participants not to change the signature (number, order, and types of arguments and result) of `testable` functions for us to be able to evaluate their submission.
+Place **83/274** (top 30%)
 
-## 📅 Solution submission guide and terms
+Prize: A lot of fun and N TONs
 
-1. **Registration Process**: Before you begin, make sure to go through the registration process via the [@toncontest_bot](https://t.me/toncontest_bot). Your solutions will not be accepted if you are not properly registered.
+# Detailed results:
 
-2. **Create a Private GitHub Repository**: Clone this repository and set it as your own private GitHub repo. Ensuring the visibility configs are set to "private" is crucial to safeguarding your solution.
+## Task 1
+Points: 5.396919110103502
 
-3. **Set Your Token**: Utilize the `token` provided to you during registration in Telegram bot and set it as a secret variable called USER_TOKEN in your private repository. You can learn more about setting secret variables in the [official GitHub documentation](https://docs.github.com/en/codespaces/managing-codespaces-for-your-organization/managing-encrypted-secrets-for-your-repository-and-organization-for-github-codespaces#adding-secrets-for-a-repository).
+GasValue: 1589005
 
-4. **Submit Your Solution**: When you are ready to submit your solution, simply push your code into your private repository. The code will be sent to the task review server, and GitHub actions will display the status of your submission.
+[Code](contracts/1.fc) [Wrapper](wrappers/Task1.fc) [Tests](tests/Task1.spec.ts)
 
-5. **Solution Evaluation**: If at least one of your solutions works well, your submission will be counted. Feel free to push solutions for more tasks; GitHub actions will run your code against tests and count successful submissions.
+Task to meet the language and provided tools for developing. Firstly solution was written with recursion (score 5.16), then optimized (5.21) and finally rewritten using Lisp-like list (5.39)
 
-6. **Check Your Points**: To check your solution points, review the logs of the GitHub action for your latest commit. Additionally, you can find your solution points in the menu button inside of the Telegram bot.
+## Task 2
 
-Best of luck with your submissions!
+Points: 5.976338143715719
 
-If for some reason you are not comfortable using the Blueprint environment to write tests for contracts, you can create your own repository. The most important thing is that all your func files with solutions should be in the /contracts folder and named taskN.fc
+GasValue: 16366081
 
-## 🏆 Prize distribution
+[Code](contracts/2.fc) [Wrapper](wrappers/Task2.fc) [Tests](tests/Task2.spec.ts)
 
-Winners of the contest will receive prizes nominated in TON, the native cryptocurrency of the TON blockchain, which is also used as a resource for contract execution.
+The goal is to multiply two matrices. Task to become familiar with memory in general and with tuples in particular in FunC.
 
-**The prize distribution will be divided among 3 groups of participants, each receiving 10,000 TON:**
+The naive algorithm in pure FunC takes a 5.97 score, so almost no need to optimizations.
 
-1. The first group will consist of the top 15% of challengers.
-2. The second group will consist of 30% of average participants.
-3. The third group will consist of the remaining 55% of the contestants.
 
-Participants will be scored based on the following system: each solved problem earns 5 points, and there will be an additional optimization score ranging from 0 to 1 point (where 0 represents an infinite amount of gas spent on the problem, and 1 represents 0 gas spent).
+## Task 3
+GasValue: 73738596
 
-## 📚 Docs
+Points: 5.291969984009893
 
-We recommend participants start from here:
-- [Developers Portal](https://ton.org/en/dev)
-- [TON Documentation](https://ton.org/docs)
+[Code](contracts/3.fc) [Wrapper](wrappers/Task3.fc) [Tests](tests/Task3.spec.ts)
+Probably the hardest task in the contest. Do a string find-and-replace-all, where strings are binary and presented as integers in linked list of cells, such that bits from the end of cell1 are connected with first bits of cell2.
+The first attempt scores 5.29 and hadn't edited.
 
-The most relevant places to start in the documentation:
-- [TON concepts](https://ton.org/docs/learn/overviews/TON_blockchain_overview)
-- [Develop Smart Contracts](https://ton.org/docs/develop/smart-contracts/)
 
-Additional and detailed information is available in the [whitepapers](https://ton.org/docs/learn/docs).
+## Task 4
+GasValue: 333391563
 
-Examples of standard smart contracts can be found [here](https://github.com/ton-blockchain/ton/tree/master/crypto/smartcont).
+Points: 5.644994443586982
 
-Developer Chats - [@tondev_eng](https://t.me/tondev_eng), [@tondev](https://t.me/tondev).
+[Code](contracts/4.fc) [Wrapper](wrappers/Task4.fc) [Tests](tests/Task4.spec.ts)
 
-FunC studying chat - [@ton_learn](https://t.me/ton_learn).
+Implement a Caesar cipher encryption and decryption functions.
 
-Introduction and tutorials for FunC are available here:
-- [FunC Overview](https://ton.org/docs/develop/func/overview)
 
-## 🛠️ How to compile and test
 
-We recommend using [blueprint](https://github.com/ton-org/blueprint), but you also can use [toncli](https://ton.org/docs/develop/smart-contracts/testing/toncli) or [ton-contract-executor](https://github.com/Naltox/ton-contract-executor) - open-source tools written by community developers.
+## Task 5
 
-These tools allow you to work with FunC smart contracts, compile them, and run local tests.
+GasValue: 1729374
 
-If for some reason you don’t want to use the tool, you can use the FunC compiler and Fift scripts [directly](https://ton.org/docs/develop/howto/compile#func).
+Points: 5.427721800691111
 
-For syntax highlighting, you can use [IDE plugins](https://ton.org/docs/develop/smart-contracts/environment/ide-plugins).
+[Code](contracts/5.fc) [Wrapper](wrappers/Task5.fc) [Tests](tests/Task5.spec.ts)
 
+Find a Fibonacci sequence from N to N+k elements.
+
+The biggest challenge was FunC compiler that produces a very unefficient Fift code for cycles in this task. So for a score 5.9-5.95 task should be written in Fift.
+
+I tried a two approaches: first the naive one with cycle and fast doubling method to find a Fibonacci(n) with O(logN). Both provide similar results around 5.42, but I see the  in tuple pushings that wasn't impr
