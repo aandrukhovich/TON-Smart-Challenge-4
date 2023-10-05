@@ -15,7 +15,6 @@ See the original contest repository https://github.com/ton-community/tsc4 and co
 
 💎 Prize: A lot of fun and 150 TONs
 
-# Detailed results:
 
 ## Task 1
 🚀 GasValue: 1589005
