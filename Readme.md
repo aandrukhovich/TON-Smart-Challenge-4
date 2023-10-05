@@ -10,9 +10,9 @@ Possible to use FunC(dialect of C) or Fift(ASM-like) to write a code. Wrappers a
 
 Tasks solved: **5/5**
 
-Place **83/274** (top 30%)
+Place **81/220** (top 37%)
 
-Prize: A lot of fun and N TONs
+Prize: A lot of fun and 150 TONs
 
 # Detailed results:
 
@@ -44,6 +44,7 @@ GasValue: 73738596
 Points: 5.291969984009893
 
 [Code](contracts/3.fc) [Wrapper](wrappers/Task3.fc) [Tests](tests/Task3.spec.ts)
+
 Probably the hardest task in the contest. Do a string find-and-replace-all, where strings are binary and presented as integers in linked list of cells, such that bits from the end of cell1 are connected with first bits of cell2.
 The first attempt scores 5.29 and hadn't edited.
 
@@ -71,4 +72,9 @@ Find a Fibonacci sequence from N to N+k elements.
 
 The biggest challenge was FunC compiler that produces a very unefficient Fift code for cycles in this task. So for a score 5.9-5.95 task should be written in Fift.
 
-I tried a two approaches: first the naive one with cycle and fast doubling method to find a Fibonacci(n) with O(logN). Both provide similar results around 5.42, but I see the  in tuple pushings that wasn't impr
+I tried a two approaches: 
+
+1. the naive one with cycle
+2. fast doubling method to find a Fibonacci(n) with O(logN).
+  
+Both provide similar results around 5.42. Best solutions use cycle code written in Fift and get score around 5.9.
