@@ -2,9 +2,9 @@
 
 ⌛ 10-days contest of writing a smart-contracts for TON blockchain 💎.
 
-Possible to use FunC(dialect of C) or Fift(ASM-like) to write a code. Wrappers and tests are written on TypeScript using Blueprint framework.
+Possible to use **FunC**(dialect of C) or **Fift**(ASM-like) to write a code. Wrappers and tests are written on **TypeScript** using **Blueprint** framework.
 
-See the original contest repository https://github.com/ton-community/tsc4 and community solutions https://docs.ton.org/develop/smart-contracts/examples#ton-smart-challenge-4.
+See [the original contest repository](https://github.com/ton-community/tsc4) and [community solutions](https://docs.ton.org/develop/smart-contracts/examples#ton-smart-challenge-4).
 
 
 # Results:
