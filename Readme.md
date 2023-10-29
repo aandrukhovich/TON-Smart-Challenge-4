@@ -1,4 +1,4 @@
-# TSC4 code repository
+# Ton Smart Challenge 4
 
 ⌛ 10-days contest of writing a smart-contracts for TON blockchain 💎.
 
